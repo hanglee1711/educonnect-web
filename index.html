@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduConnect - Quản Lý Học Sinh &amp; Sổ Liên Lạc Điện Tử</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-hover:#1d4ed8; --primary-dark:#1e40af; --indigo:#4338ca;
+  --success:#10b981; --success-hover:#059669; --danger:#ef4444; --danger-bg:#fee2e2; --danger-text:#b91c1c;
+  --amber:#f59e0b; --indigo2:#6366f1;
+  --text:#000000; --text-dim:#64748b; --border:#000000; --bg:#ffffff; --alt-row:#f8fafc; --grid:#cbd5e1;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#e2e8f0;color:var(--text);font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;}
+.hidden{display:none !important;}
+button{cursor:pointer;font-family:inherit;}
+
+/* ---------- Auth ---------- */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.auth-card{width:980px;max-width:100%;min-height:640px;background:#fff;border:1.5px solid #000;border-radius:20px;display:flex;overflow:hidden;}
+.left-panel{width:380px;flex:none;background:linear-gradient(135deg,var(--primary-dark),var(--primary) 50%,var(--indigo));color:#fff;padding:35px;display:flex;flex-direction:column;}
+.lp-brand-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.lp-logo{font-size:26px;}
+.lp-brand{font-size:24px;font-weight:800;}
+.lp-sub{font-size:11px;color:#bfdbfe;font-weight:700;letter-spacing:1px;}
+.lp-head{font-size:20px;font-weight:800;line-height:1.3;margin-bottom:14px;white-space:pre-line;}
+.lp-desc{font-size:12px;color:#e0e7ff;line-height:1.5;margin-bottom:16px;}
+.lp-features{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:12px;margin-bottom:auto;}
+.lp-features div{font-size:12px;margin-bottom:8px;}
+.lp-features div:last-child{margin-bottom:0;}
+.lp-demo-label{font-size:11px;color:#bfdbfe;font-weight:700;margin:16px 0 6px;}
+.demo-row{display:flex;gap:6px;flex-wrap:wrap;}
+.demo-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;}
+.demo-btn:hover{background:rgba(255,255,255,.35);}
+
+.right-panel{flex:1;min-width:0;padding:24px 40px;display:flex;flex-direction:column;}
+.tab-row{display:flex;gap:18px;margin-bottom:14px;}
+.tab-btn{background:transparent;border:none;font-size:15px;font-weight:700;color:var(--text-dim);padding-bottom:8px;}
+.tab-btn.active{color:#000;border-bottom:3px solid var(--primary);}
+.role-title{font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:8px;}
+.role-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.role-opt{font-size:12px;font-weight:700;color:#000;padding:8px 12px;background:#fff;border:1.5px solid #000;border-radius:8px;cursor:pointer;}
+.role-opt.active{background:#eff6ff;border:2px solid var(--primary);color:var(--primary);}
+
+.form-group{margin-bottom:10px;}
+.form-group label{display:block;font-size:12px;font-weight:700;margin-bottom:4px;}
+.form-row2{display:flex;gap:10px;}
+.form-row2 .form-group{flex:1;}
+.pwd-row{display:flex;gap:6px;}
+.pwd-row input{flex:1;}
+.btn-eye{width:40px;flex:none;background:#fff;border:1.5px solid #000;border-radius:8px;font-size:14px;}
+.form-row-check{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;margin:10px 0;}
+.form-row-check input{width:auto;}
+.forgot-link{background:none;border:none;color:#000;font-size:12px;font-weight:700;text-decoration:underline;float:right;}
+.strength-bar{height:4px;border-radius:2px;background:#e2e8f0;overflow:hidden;margin:8px 0;}
+.strength-fill{height:100%;width:0%;background:var(--success);transition:width .2s;}
+
+/* ---------- Inputs / buttons ---------- */
+input,select,textarea{background:#fff;border:1.5px solid #000;border-radius:8px;padding:8px 12px;color:#000;font-family:inherit;font-size:13px;width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border:2px solid #000;}
+input::placeholder{color:#64748b;}
+.btn{background:#fff;border:1.5px solid #000;border-radius:8px;padding:9px 16px;font-weight:700;color:#000;}
+.btn:hover{background:#f1f5f9;}
+.btn-primary{background:var(--primary);border:none;color:#fff;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-success{background:var(--success);border:none;color:#fff;}
+.btn-success:hover{background:var(--success-hover);}
+.btn-danger{background:var(--danger-bg);border:1.5px solid var(--danger);color:var(--danger-text);}
+.btn-danger:hover{background:var(--danger);color:#fff;}
+.btn-block{width:100%;}
+
+/* ---------- Dashboard ---------- */
+#pageHome{min-height:100vh;background:#fff;}
+.home-wrap{max-width:1300px;margin:0 auto;padding:20px 24px;}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.topbar-logo{font-size:24px;}
+.topbar-title{font-size:20px;font-weight:800;}
+.topbar-sub{font-size:12px;color:var(--text-dim);font-weight:500;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#userTagHome{font-size:13px;font-weight:700;padding-right:6px;}
+.btn-logout{background:var(--danger-bg);color:var(--danger-text);border:1.5px solid var(--danger);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;}
+.btn-logout:hover{background:var(--danger);color:#fff;}
+
+.action-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.action-bar input,.action-bar select{width:auto;min-width:160px;}
+#lblDate{font-weight:700;padding:4px 8px;white-space:nowrap;}
+
+table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid #000;border-radius:10px;overflow:hidden;}
+th{background:#f8fafc;color:#000;font-weight:700;font-size:13px;padding:10px;border:1px solid var(--grid);text-align:center;white-space:nowrap;}
+td{padding:6px;border-bottom:1px solid var(--grid);text-align:center;font-size:13px;height:46px;}
+tbody tr:nth-child(even) td{background:var(--alt-row);}
+.empty-row{color:var(--text-dim);padding:20px !important;}
+.name-cell{text-align:left;font-weight:700;padding-left:14px !important;}
+.table-wrap{overflow-x:auto;}
+
+.tick{display:inline-flex;align-items:center;justify-content:center;}
+.tick input[type=radio]{appearance:none;width:22px;height:22px;border:2px solid #000;border-radius:6px;background:#fff;cursor:pointer;margin:0;}
+.tick input[type=radio]:hover{border-color:var(--primary);background:#eff6ff;}
+.tick input[type=radio]:checked.c-green{background:var(--success);border-color:#000;}
+.tick input[type=radio]:checked.c-amber{background:var(--amber);border-color:#000;}
+.tick input[type=radio]:checked.c-indigo{background:var(--indigo2);border-color:#000;}
+.tick input[type=radio]:checked.c-red{background:var(--danger);border-color:#000;}
+
+.act-cell{display:flex;gap:6px;justify-content:center;}
+.icon-btn{width:34px;height:30px;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.icon-btn.edit{background:#fff;border:1.5px solid #000;}
+.icon-btn.del{background:var(--danger-bg);border:1.5px solid var(--danger);color:var(--danger-text);}
+
+/* ---------- Modal ---------- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+.modal-box{background:#fff;border:1.5px solid #000;border-radius:14px;padding:24px;width:420px;max-width:100%;max-height:88vh;overflow:auto;}
+.modal-title{font-size:15px;font-weight:800;margin:0 0 16px;}
+.modal-msg{color:#000;font-size:13px;line-height:1.6;white-space:pre-line;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+
+@media (max-width:900px){ .auth-card{flex-direction:column;height:auto;} .left-panel{width:100%;} }
+</style>
+</head>
+<body>
+
+<!-- ===================== AUTH ===================== -->
+<div id="pageAuth" class="auth-wrap">
+  <div class="auth-card">
+    <div class="left-panel">
+      <div class="lp-brand-row">
+        <div class="lp-logo">📚</div>
+        <div><div class="lp-brand">EduConnect</div><div class="lp-sub">SỔ LIÊN LẠC &amp; QUẢN LÝ HỌC SINH</div></div>
+      </div>
+      <div class="lp-head">Đồng hành cùng con
+mỗi bước đến trường</div>
+      <div class="lp-desc">Hệ thống điểm danh thông minh thời gian thực, cập nhật bài giảng hàng ngày và kết nối gắn kết gia đình - nhà trường.</div>
+      <div class="lp-features">
+        <div>⏱️ Điểm danh: Báo tức thì tới phụ huynh</div>
+        <div>📖 Nhật ký: Nắm rõ con hôm nay học gì</div>
+        <div>📝 Đánh giá: Cập nhật bài tập &amp; nhận xét</div>
+      </div>
+      <div class="lp-demo-label">⚡ Điền nhanh tài khoản mẫu (Click để thử):</div>
+      <div class="demo-row">
+        <button class="demo-btn" id="demoParent">👨‍👩‍👧 Phụ huynh</button>
+        <button class="demo-btn" id="demoTeacher">👩‍🏫 Giáo viên</button>
+        <button class="demo-btn" id="demoAdmin">🏫 Quản lý</button>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="tab-row">
+        <button class="tab-btn active" id="tabLogin">Đăng Nhập</button>
+        <button class="tab-btn" id="tabRegister">Đăng Ký Tài Khoản</button>
+      </div>
+      <div class="role-title">VAI TRÒ TRUY CẬP:</div>
+      <div class="role-row" id="roleRow">
+        <button class="role-opt active" data-role="parent">👨‍👩‍👧 Phụ huynh</button>
+        <button class="role-opt" data-role="teacher">👩‍🏫 Giáo viên</button>
+        <button class="role-opt" data-role="admin">🏫 Nhà trường</button>
+      </div>
+
+      <div id="loginForm">
+        <div class="form-group">
+          <label>Số điện thoại hoặc Email</label>
+          <input type="text" id="loginAccount" placeholder="0901234567 hoặc phuhuynh@educonnect.vn">
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu <button class="forgot-link" id="forgotBtn">Quên mật khẩu?</button></label>
+          <div class="pwd-row">
+            <input type="password" id="loginPwd" placeholder="••••••••">
+            <button class="btn-eye" id="toggleLoginPwd">👁</button>
+          </div>
+        </div>
+        <div class="form-row-check"><input type="checkbox" id="rememberLogin" checked><span>Ghi nhớ đăng nhập trên thiết bị này</span></div>
+        <button class="btn btn-primary btn-block" id="btnLoginSubmit">ĐĂNG NHẬP NGAY</button>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <div class="form-group"><label>Họ và tên người dùng *</label><input type="text" id="regName" placeholder="VD: Nguyễn Văn A"></div>
+        <div class="form-row2">
+          <div class="form-group"><label>Số điện thoại *</label><input type="text" id="regPhone" placeholder="0987654321"></div>
+          <div class="form-group"><label>Địa chỉ Email</label><input type="text" id="regEmail" placeholder="email@gmail.com"></div>
+        </div>
+        <div class="form-row2">
+          <div class="form-group"><label>Mật khẩu *</label><input type="password" id="regPwd" placeholder="Ít nhất 6 ký tự"></div>
+          <div class="form-group"><label>Xác nhận mật khẩu *</label><input type="password" id="regConfirm" placeholder="Nhập lại mật khẩu"></div>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+        <div class="form-row-check"><input type="checkbox" id="regTerms" checked><span>Tôi đồng ý với Điều khoản &amp; Chính sách bảo mật</span></div>
+        <button class="btn btn-success btn-block" id="btnRegisterSubmit">HOÀN TẤT ĐĂNG KÝ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== HOME / ATTENDANCE ===================== -->
+<div id="pageHome" class="hidden">
+  <div class="home-wrap">
+    <div class="topbar">
+      <div class="topbar-logo">📚</div>
+      <div><div class="topbar-title">EduConnect - Quản Lý Điểm Danh</div><div class="topbar-sub">Đánh dấu trạng thái chuyên cần thời gian thực bằng cách tích ô</div></div>
+      <div class="topbar-right">
+        <span id="userTagHome"></span>
+        <button class="btn-logout" id="btnLogout">🚪 Đăng Xuất</button>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btnAddStudent">➕ Thêm Học Sinh</button>
+      <input type="text" id="txtSearch" placeholder="🔍 Tìm theo tên học sinh...">
+      <select id="comboClass"><option>Tất cả lớp</option></select>
+      <span id="lblDate"></span>
+      <button class="btn" id="btnRefresh">🔄 Tải lại</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:50px;">STT</th><th>Họ và Tên Học Sinh</th><th style="width:90px;">Lớp</th><th style="width:110px;">Đúng Giờ</th><th style="width:110px;">Muộn Giờ</th><th style="width:130px;">Vắng Có Phép</th><th style="width:140px;">Vắng Không Phép</th><th style="width:130px;">Thao Tác</th></tr></thead>
+        <tbody id="attBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ===================== Helpers ===================== */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function todayVN(){ const d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+async function sha256Hex(str){
+  const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function hashPassword(pwd){ return await sha256Hex(pwd+"educonnect_salt_2026"); }
+
+function openModal(html){
+  const root=document.getElementById('modalRoot');
+  root.innerHTML=`<div class="modal-overlay"><div class="modal-box">${html}</div></div>`;
+  const overlay=root.querySelector('.modal-overlay');
+  overlay.addEventListener('mousedown', e=>{ if(e.target===overlay) closeModal(); });
+  document.addEventListener('keydown', escHandler);
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; document.removeEventListener('keydown', escHandler); }
+function escHandler(e){ if(e.key==='Escape') closeModal(); }
+function showAlert(title,msg,onClose){
+  openModal(`<h3 class="modal-title">${esc(title)}</h3><p class="modal-msg">${esc(msg)}</p><div class="modal-actions"><button class="btn btn-primary" id="btnAlertOk">OK</button></div>`);
+  document.getElementById('btnAlertOk').onclick=()=>{ closeModal(); if(onClose) onClose(); };
+}
+function showConfirm(title,msg){
+  return new Promise(resolve=>{
+    openModal(`<h3 class="modal-title">${esc(title)}</h3><p class="modal-msg">${esc(msg)}</p><div class="modal-actions"><button class="btn" id="cfNo">Không</button><button class="btn btn-danger" id="cfYes">Có</button></div>`);
+    document.getElementById('cfNo').onclick=()=>{closeModal();resolve(false);};
+    document.getElementById('cfYes').onclick=()=>{closeModal();resolve(true);};
+  });
+}
+
+/* ===================== Data layer ===================== */
+const STORAGE_KEY='educonnect_data_v1';
+let DB=null;
+
+function loadData(){
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ DB=JSON.parse(raw); return true; } }catch(e){}
+  return false;
+}
+function saveData(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }catch(e){} }
+function maxId(arr){ return arr.reduce((m,x)=>Math.max(m,x.id),0); }
+
+async function seedData(){
+  const pwdHash=await hashPassword('123456');
+  DB={
+    users:[
+      {id:1,role:'parent',fullname:'Chị Mai Lan (Mẹ bé Minh Anh)',phone:'0901234567',email:'phuhuynh@educonnect.vn',password_hash:pwdHash},
+      {id:2,role:'teacher',fullname:'Thầy Nguyễn Quốc Hùng (GVCN Lớp 4B)',phone:'0902345678',email:'giaovien@educonnect.vn',password_hash:pwdHash},
+      {id:3,role:'admin',fullname:'Ban Giám Hiệu (Tiểu học Ánh Dương)',phone:'0903456789',email:'admin@educonnect.vn',password_hash:pwdHash}
+    ],
+    students:[
+      {id:1,fullname:'Nguyễn Nhật Huy Khánh',class_name:'Lớp 6B4'},
+      {id:2,fullname:'Nguyễn Vũ Anh Minh',class_name:'Lớp 7B4'}
+    ],
+    attendance:[]
+  };
+  saveData();
+}
+async function initDB(){
+  if(!loadData() || !DB.users || !DB.users.length) await seedData();
+}
+
+async function authenticateUser(account,password,expectedRole){
+  account=account.trim();
+  if(!account || !password) return {user:null,msg:'Vui lòng nhập tài khoản và mật khẩu!'};
+  const pwdHash=await hashPassword(password);
+  const user=DB.users.find(u=>(u.phone===account || u.email===account) && u.password_hash===pwdHash);
+  if(!user) return {user:null,msg:'Tài khoản hoặc mật khẩu không chính xác!'};
+  if(expectedRole && user.role!==expectedRole){
+    const roleVi={parent:'Phụ huynh',teacher:'Giáo viên',admin:'Nhà trường'}[user.role]||user.role;
+    return {user:null,msg:`Tài khoản của bạn có vai trò là: ${roleVi}. Vui lòng chọn đúng vai trò để tiếp tục!`};
+  }
+  return {user,msg:'Đăng nhập thành công!'};
+}
+async function registerUser(role,fullname,phone,email,password){
+  fullname=fullname.trim(); phone=phone.trim(); email=email.trim();
+  if(!fullname) return {ok:false,msg:'Họ và tên không được để trống!'};
+  if(!phone && !email) return {ok:false,msg:'Vui lòng nhập số điện thoại hoặc email!'};
+  if(!password || password.length<6) return {ok:false,msg:'Mật khẩu phải có ít nhất 6 ký tự!'};
+  if(phone && DB.users.some(u=>u.phone===phone)) return {ok:false,msg:`Số điện thoại '${phone}' đã tồn tại trong hệ thống!`};
+  if(email && DB.users.some(u=>u.email===email)) return {ok:false,msg:`Email '${email}' đã tồn tại trong hệ thống!`};
+  const pwdHash=await hashPassword(password);
+  const id=maxId(DB.users)+1;
+  DB.users.push({id,role,fullname,phone:phone||null,email:email||null,password_hash:pwdHash});
+  saveData();
+  return {ok:true,msg:'Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.'};
+}
+
+function getStudentsAttendance(search,classFilter){
+  const today=todayStr();
+  let rows=DB.students.map(s=>{
+    const att=DB.attendance.find(a=>a.student_id===s.id && a.date===today);
+    return {id:s.id, fullname:s.fullname, class_name:s.class_name, status: att?att.status:'Đúng giờ'};
+  });
+  if(search) rows=rows.filter(r=>r.fullname.toLowerCase().includes(search.toLowerCase()));
+  if(classFilter && classFilter!=='Tất cả') rows=rows.filter(r=>r.class_name===classFilter);
+  rows.sort((a,b)=> a.class_name.localeCompare(b.class_name) || a.fullname.localeCompare(b.fullname,'vi'));
+  return rows;
+}
+function getAllClasses(){
+  return [...new Set(DB.students.map(s=>s.class_name).filter(Boolean))].sort();
+}
+function addStudent(fullname,className){
+  const id=maxId(DB.students)+1;
+  DB.students.push({id,fullname,class_name:className});
+  DB.attendance.push({id:maxId(DB.attendance)+1, student_id:id, date:todayStr(), status:'Đúng giờ'});
+  saveData(); return id;
+}
+function updateStudent(id,fullname,className){
+  const s=DB.students.find(x=>x.id===id);
+  if(s){ s.fullname=fullname; s.class_name=className; }
+  saveData();
+}
+function deleteStudent(id){
+  DB.attendance=DB.attendance.filter(a=>a.student_id!==id);
+  DB.students=DB.students.filter(s=>s.id!==id);
+  saveData();
+}
+function setStudentAttendance(studentId,status){
+  const today=todayStr();
+  const rec=DB.attendance.find(a=>a.student_id===studentId && a.date===today);
+  if(rec) rec.status=status;
+  else DB.attendance.push({id:maxId(DB.attendance)+1, student_id:studentId, date:today, status});
+  saveData();
+}
+
+/* ===================== App state ===================== */
+let currentUser=null;
+let selectedRole='parent';
+
+function showPage(id){
+  document.getElementById('pageAuth').classList.toggle('hidden', id!=='pageAuth');
+  document.getElementById('pageHome').classList.toggle('hidden', id!=='pageHome');
+}
+
+/* ===================== Auth screen ===================== */
+function setRole(role){
+  selectedRole=role;
+  document.querySelectorAll('.role-opt').forEach(b=>b.classList.toggle('active', b.dataset.role===role));
+}
+function switchAuthTab(idx){
+  document.getElementById('tabLogin').classList.toggle('active', idx===0);
+  document.getElementById('tabRegister').classList.toggle('active', idx===1);
+  document.getElementById('loginForm').classList.toggle('hidden', idx!==0);
+  document.getElementById('registerForm').classList.toggle('hidden', idx!==1);
+}
+function fillDemo(account,password,role){
+  switchAuthTab(0);
+  setRole(role);
+  document.getElementById('loginAccount').value=account;
+  document.getElementById('loginPwd').value=password;
+}
+async function handleLogin(){
+  const acc=document.getElementById('loginAccount').value.trim();
+  const pwd=document.getElementById('loginPwd').value;
+  const {user,msg}=await authenticateUser(acc,pwd,selectedRole);
+  if(user){
+    currentUser=user;
+    openHome();
+  } else {
+    showAlert('Đăng nhập thất bại', msg);
+  }
+}
+async function handleRegister(){
+  if(!document.getElementById('regTerms').checked){
+    showAlert('Điều khoản','Vui lòng đồng ý với Điều khoản dịch vụ để tiếp tục!'); return;
+  }
+  const name=document.getElementById('regName').value.trim();
+  const phone=document.getElementById('regPhone').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pwd=document.getElementById('regPwd').value;
+  const confirm=document.getElementById('regConfirm').value;
+  if(pwd!==confirm){ showAlert('Lỗi mật khẩu','Mật khẩu xác nhận không khớp!'); return; }
+  const res=await registerUser(selectedRole,name,phone,email,pwd);
+  if(res.ok){
+    showAlert('Thành công', res.msg, ()=>{
+      switchAuthTab(0);
+      document.getElementById('loginAccount').value=phone||email;
+      document.getElementById('loginPwd').value=pwd;
+    });
+  } else {
+    showAlert('Đăng ký không thành công', res.msg);
+  }
+}
+function checkPwdStrength(pwd){
+  let score=0;
+  if(pwd.length>=6) score+=40;
+  if(pwd.length>=8) score+=30;
+  if(/[0-9]/.test(pwd) && /[a-zA-Z]/.test(pwd)) score+=30;
+  const fill=document.getElementById('strengthFill');
+  fill.style.width=score+'%';
+  fill.style.background = score<50 ? '#ef4444' : (score<80 ? '#f59e0b' : '#10b981');
+}
+
+/* ===================== Home / attendance screen ===================== */
+function openHome(){
+  const roleMap={parent:'Phụ Huynh',teacher:'Giáo Viên',admin:'Ban Giám Hiệu'};
+  document.getElementById('userTagHome').textContent=`👤 ${currentUser.fullname} (${roleMap[currentUser.role]||'Thành viên'})`;
+  document.getElementById('lblDate').textContent=`📅 Ngày: ${todayVN()}`;
+  showPage('pageHome');
+  loadAttendance();
+}
+function updateClassCombo(){
+  const combo=document.getElementById('comboClass');
+  const current=combo.value;
+  const classes=getAllClasses();
+  combo.innerHTML = `<option>Tất cả lớp</option>` + classes.map(c=>`<option>${esc(c)}</option>`).join('');
+  combo.value = classes.includes(current) ? current : 'Tất cả lớp';
+}
+function loadAttendance(){
+  updateClassCombo();
+  const search=document.getElementById('txtSearch').value.trim();
+  let cf=document.getElementById('comboClass').value;
+  if(cf==='Tất cả lớp') cf='Tất cả';
+  const records=getStudentsAttendance(search,cf);
+  const tbody=document.getElementById('attBody');
+  if(!records.length){
+    tbody.innerHTML=`<tr><td colspan="8" class="empty-row">Chưa có học sinh nào trong danh sách</td></tr>`;
+    return;
+  }
+  const statuses=[['Đúng giờ','c-green'],['Muộn giờ','c-amber'],['Vắng có phép','c-indigo'],['Vắng không phép','c-red']];
+  tbody.innerHTML=records.map((r,idx)=>{
+    const ticks=statuses.map(([sname,cls])=>
+      `<td><label class="tick"><input type="radio" class="${cls}" name="att_${r.id}" ${r.status===sname?'checked':''} onchange="onAttendanceChange(${r.id},'${sname}')"></label></td>`
+    ).join('');
+    return `<tr>
+      <td>${idx+1}</td>
+      <td class="name-cell">${esc(r.fullname)}</td>
+      <td>${esc(r.class_name)}</td>
+      ${ticks}
+      <td><div class="act-cell">
+        <button class="icon-btn edit" title="Chỉnh sửa học sinh" onclick="openEditDialog(${r.id})">✏️</button>
+        <button class="icon-btn del" title="Xóa học sinh" onclick="handleDeleteStudent(${r.id},'${esc(r.fullname).replace(/'/g,"&#39;")}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+function onAttendanceChange(studentId,status){ setStudentAttendance(studentId,status); }
+
+function openAddDialog(){
+  openModal(`
+    <h3 class="modal-title">➕ Thêm Học Sinh Mới Vào Danh Sách</h3>
+    <div class="form-group"><label>Tên học sinh *</label><input type="text" id="dlgName" placeholder="VD: Nguyễn Minh Anh"></div>
+    <div class="form-group"><label>Lớp *</label><input type="text" id="dlgClass" value="Lớp 4B" placeholder="VD: Lớp 4B"></div>
+    <div class="modal-actions"><button class="btn" id="dlgCancel">Hủy Bỏ</button><button class="btn btn-primary" id="dlgSave">Lưu Lại</button></div>`);
+  document.getElementById('dlgCancel').onclick=closeModal;
+  document.getElementById('dlgSave').onclick=()=>{
+    const name=document.getElementById('dlgName').value.trim();
+    const cname=document.getElementById('dlgClass').value.trim();
+    if(!name){ showAlert('Thiếu thông tin','Vui lòng nhập tên học sinh!'); return; }
+    if(!cname){ showAlert('Thiếu thông tin','Vui lòng nhập lớp học!'); return; }
+    addStudent(name,cname);
+    closeModal(); loadAttendance();
+  };
+}
+function openEditDialog(studentId){
+  const s=DB.students.find(x=>x.id===studentId);
+  if(!s) return;
+  openModal(`
+    <h3 class="modal-title">✏️ Chỉnh Sửa Thông Tin</h3>
+    <div class="form-group"><label>Tên học sinh *</label><input type="text" id="dlgName" value="${esc(s.fullname)}" placeholder="VD: Nguyễn Minh Anh"></div>
+    <div class="form-group"><label>Lớp *</label><input type="text" id="dlgClass" value="${esc(s.class_name)}" placeholder="VD: Lớp 4B"></div>
+    <div class="modal-actions"><button class="btn" id="dlgCancel">Hủy Bỏ</button><button class="btn btn-primary" id="dlgSave">Lưu Lại</button></div>`);
+  document.getElementById('dlgCancel').onclick=closeModal;
+  document.getElementById('dlgSave').onclick=()=>{
+    const name=document.getElementById('dlgName').value.trim();
+    const cname=document.getElementById('dlgClass').value.trim();
+    if(!name){ showAlert('Thiếu thông tin','Vui lòng nhập tên học sinh!'); return; }
+    if(!cname){ showAlert('Thiếu thông tin','Vui lòng nhập lớp học!'); return; }
+    updateStudent(studentId,name,cname);
+    closeModal(); loadAttendance();
+  };
+}
+async function handleDeleteStudent(studentId,fullname){
+  const ok=await showConfirm('Xác nhận xóa', `Bạn có chắc chắn muốn xóa học sinh '${fullname}' khỏi danh sách?`);
+  if(ok){ deleteStudent(studentId); loadAttendance(); }
+}
+async function handleLogout(){
+  const ok=await showConfirm('Đăng xuất','Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?');
+  if(ok){
+    currentUser=null;
+    document.getElementById('loginPwd').value='';
+    showPage('pageAuth');
+  }
+}
+
+/* ===================== Event bindings ===================== */
+function setupHandlers(){
+  document.getElementById('tabLogin').onclick=()=>switchAuthTab(0);
+  document.getElementById('tabRegister').onclick=()=>switchAuthTab(1);
+  document.querySelectorAll('.role-opt').forEach(b=>b.addEventListener('click',()=>setRole(b.dataset.role)));
+
+  document.getElementById('demoParent').onclick=()=>fillDemo('phuhuynh@educonnect.vn','123456','parent');
+  document.getElementById('demoTeacher').onclick=()=>fillDemo('giaovien@educonnect.vn','123456','teacher');
+  document.getElementById('demoAdmin').onclick=()=>fillDemo('admin@educonnect.vn','123456','admin');
+
+  document.getElementById('forgotBtn').onclick=()=>showAlert('Quên mật khẩu','Vui lòng liên hệ Hotline: 1900-1234 hoặc Email: support@educonnect.vn để đặt lại mật khẩu!');
+  document.getElementById('toggleLoginPwd').onclick=(e)=>{
+    const inp=document.getElementById('loginPwd');
+    if(inp.type==='password'){ inp.type='text'; e.target.textContent='🙈'; }
+    else { inp.type='password'; e.target.textContent='👁'; }
+  };
+  document.getElementById('btnLoginSubmit').onclick=handleLogin;
+  document.getElementById('loginPwd').addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
+  document.getElementById('regPwd').addEventListener('input', e=>checkPwdStrength(e.target.value));
+  document.getElementById('btnRegisterSubmit').onclick=handleRegister;
+
+  document.getElementById('btnAddStudent').onclick=openAddDialog;
+  document.getElementById('txtSearch').addEventListener('input', loadAttendance);
+  document.getElementById('comboClass').addEventListener('change', loadAttendance);
+  document.getElementById('btnRefresh').onclick=loadAttendance;
+  document.getElementById('btnLogout').onclick=handleLogout;
+}
+
+/* ===================== Bootstrap ===================== */
+(async function init(){
+  await initDB();
+  setupHandlers();
+  showPage('pageAuth');
+})();
+</script>
+</body>
+</html>
